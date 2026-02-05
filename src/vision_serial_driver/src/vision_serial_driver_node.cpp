@@ -10,7 +10,7 @@ serial_driver_node::serial_driver_node(std::string device_name, std::string node
   // 清零数组
   memset(vArray->array, 0, sizeof(visionArray));
   memset(rArray->array, 0, sizeof(robotArray));
-  memset(velArray->array, 0, sizeof(VelArray));
+//  memset(velArray->array, 0, sizeof(VelArray));
 
   // 设置重启计时器1hz.
   reopenTimer = create_wall_timer(
@@ -24,7 +24,7 @@ serial_driver_node::serial_driver_node(std::string device_name, std::string node
   timestamp_offset_ = this->declare_parameter("timestamp_offset", 0.00591);
   tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
-  VelControl = this->declare_parameter("VelControl", 0);
+//  VelControl = this->declare_parameter("VelControl", 1);
 
   // // Detect parameter client
   // detector_param_client_ = std::make_shared<rclcpp::AsyncParametersClient>(this, "armor_detector");
@@ -162,32 +162,32 @@ void serial_driver_node::auto_aim_callback(const vision_interfaces::msg::AutoAim
  if (isOpen)
   {
 
-    velArray->msg.fire = vMsg.fire;
-    velArray->msg.aimPitch = -vMsg.aim_pitch;
-    velArray->msg.aimYaw = vMsg.aim_yaw;
-    velArray->msg.tracking = vMsg.tracking;
-    velArray->msg.head = 0xA5;
+    vArray->msg.fire = vMsg.fire;
+    vArray->msg.aimPitch = -vMsg.aim_pitch;
+    vArray->msg.aimYaw = vMsg.aim_yaw;
+    vArray->msg.tracking = vMsg.tracking;
 
+    // vArray->msg.aimPVel = -vMsg.aim_p_vels;
+    // vArray->msg.aimYVel = vMsg.aim_y_vel;
+    vArray->msg.aimPVel = 0.0;
+    vArray->msg.aimYVel = 0.0;
+    vArray->msg.VelControl = 1;
+    vArray->msg.head = 0xA5;
 
-    velArray->msg.aimPVel = vMsg.aim_p_vel;
-    velArray->msg.aimYVel = vMsg.aim_y_vel;
-    velArray->msg.VelControl = VelControl;
-    velArray->msg.fire = vMsg.fire;
-    velArray->msg.aimPitch = -vMsg.aim_pitch;
-    velArray->msg.aimYaw = vMsg.aim_yaw;
-    velArray->msg.tracking = vMsg.tracking;
-    velArray->msg.head = 0xA5;
+    // velArray->msg.aimPVel = vMsg.aim_p_vel;
+    // velArray->msg.aimYVel = vMsg.aim_y_vel;
+    // velArray->msg.VelControl = 1;
+    // velArray->msg.fire = vMsg.fire;
+    // velArray->msg.aimPitch = -vMsg.aim_pitch;
+    // velArray->msg.aimYaw = vMsg.aim_yaw;
+    // velArray->msg.tracking = vMsg.tracking;
+    // velArray->msg.head = 0xA5;
 
-    if (vArray->msg.VelControl == 0)
-    {
-      serial_write(vArray->array, sizeof(vArray->array)-2);
-    }
-    else
-    {
-    serial_write(velArray->array, sizeof(velArray->array));
-    }
 
     // serial_write(vArray->array, sizeof(vArray->array));
+
+
+    serial_write(vArray->array, sizeof(vArray->array));
   }
 }
 

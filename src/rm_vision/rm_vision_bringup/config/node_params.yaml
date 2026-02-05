@@ -2,7 +2,7 @@
   ros__parameters:
     camera_info_url: package://rm_vision_bringup/config/camera_info.yaml
     exposure_time: 2000
-    gain: 5.0
+    gain: 12.0
 
 /serial_driver:
   ros__parameters:
@@ -12,7 +12,6 @@
     flow_control: none
     parity: none
     stop_bits: "1"
-    VelControl: 1
 
 /armor_detector:
   ros__parameters:
@@ -50,7 +49,7 @@
 /vision_attacker:
   ros__parameters:
     trajectory:
-      lag_time: 0.1
+      lag_time: 0.05
       air_k: 0.04
       yaw_fix: 0.5
       pitch_fix: -0.5
@@ -74,7 +73,7 @@
       comming_angle: 60.0 # degree
       leaving_angle: 20.0 # degree
       decision_speed: 8.0 # rad/s
-      high_speed_delay_time: 0.015 # s
-      low_speed_delay_time: 0.015 # s
+      high_speed_delay_time: 0.07 # s
+      low_speed_delay_time: 0.04 # s
 
     

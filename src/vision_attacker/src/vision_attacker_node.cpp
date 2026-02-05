@@ -99,49 +99,49 @@ void Tracker_node::target_callback(const auto_aim_interfaces::msg::Target target
     {
         aim.tracking = 0;
         aimPub->publish(aim);
-        RCLCPP_INFO(get_logger(), "aimYaw:%05.2f/aimPitch:%05.2f", aim.aim_yaw, aim.aim_pitch);
+
         return;
     }
 
     // Convert tracker message to planner Target and run planner
-    auto_aim::Target t;
-    t.from_msg(target_msg, std::chrono::steady_clock::now());
-    double bullet_speed = robotPtr->muzzle_speed > 15 ? robotPtr->muzzle_speed : 15.0;
-    auto plan = planner_->plan(t, bullet_speed);
+        auto_aim::Target t;
+        t.from_msg(target_msg, std::chrono::steady_clock::now());
+        double bullet_speed = robotPtr->muzzle_speed > 15 ? robotPtr->muzzle_speed : 15.0;
+        auto plan = planner_->plan(t, bullet_speed);
 
-    // Map planner output (radians) to message (degrees)
-    aim.aim_yaw = plan.target_yaw * 180.0 / M_PI;
-    // normalize to [0,360)
-    if (aim.aim_yaw < 0) aim.aim_yaw += 360.0;
-    if (aim.aim_yaw >= 360.0) aim.aim_yaw -= 360.0;
-    aim.aim_pitch = plan.target_pitch * 180.0 / M_PI;
-    aim.fire = plan.fire ? 1 : 0;
-    aim.tracking = 1;
+        // Map planner output (radians) to message (degrees)
+        aim.aim_yaw = plan.target_yaw * 180.0 / M_PI;
+        // normalize to [0,360)
+        if (aim.aim_yaw < 0) aim.aim_yaw += 360.0;
+        if (aim.aim_yaw >= 360.0) aim.aim_yaw -= 360.0;
+        aim.aim_pitch = plan.target_pitch * 180.0 / M_PI;
+        aim.fire = plan.fire ? 1 : 0;
+        aim.tracking = 1;
+        
+
+        // Update markers from planner debug info
+        aimPoint.pose.position.x = planner_->debug_xyza[0];
+        aimPoint.pose.position.y = planner_->debug_xyza[1];
+        aimPoint.pose.position.z = planner_->debug_xyza[2];
+
+        realAimPoint.pose.position.x = target_msg.position.x - target_msg.radius_1 * cos(robotPtr->self_yaw / 180.0 * M_PI);
+        realAimPoint.pose.position.y = target_msg.position.y - target_msg.radius_1 * sin(robotPtr->self_yaw / 180.0 * M_PI);
+        realAimPoint.pose.position.z = target_msg.position.z;
+
+        aimPoint.header.stamp = now();
+        markerPub->publish(aimPoint);
+        aimMarkerPub->publish(realAimPoint);
+
+        aim.aim_yaw += yawFix;
+        aim.aim_pitch += pitchFix;
+        aim.aim_p_vel = plan.pitch_vel * 180.0 / M_PI;
+        aim.aim_y_vel = plan.yaw_vel * 180.0 / M_PI;
+        aimPub->publish(aim);
     
-
-    // Update markers from planner debug info
-    aimPoint.pose.position.x = planner_->debug_xyza[0];
-    aimPoint.pose.position.y = planner_->debug_xyza[1];
-    aimPoint.pose.position.z = planner_->debug_xyza[2];
-
-    realAimPoint.pose.position.x = target_msg.position.x - target_msg.radius_1 * cos(robotPtr->self_yaw / 180.0 * M_PI);
-    realAimPoint.pose.position.y = target_msg.position.y - target_msg.radius_1 * sin(robotPtr->self_yaw / 180.0 * M_PI);
-    realAimPoint.pose.position.z = target_msg.position.z;
-
-    aimPoint.header.stamp = now();
-    markerPub->publish(aimPoint);
-    aimMarkerPub->publish(realAimPoint);
-
-    aim.aim_yaw += yawFix;
-    aim.aim_pitch += pitchFix;
-    aim.aim_p_vel = plan.target_pitch_vel * 180.0 / M_PI;
-    aim.aim_y_vel = plan.target_yaw_vel * 180.0 / M_PI;
-    aimPub->publish(aim);
+    RCLCPP_INFO(get_logger(), "aimYaw:%05.2f/aimPitch:%05.2f/aimYawVel:%05.2f/aimPitchVel:%05.2f", aim.aim_yaw, aim.aim_pitch,aim.aim_y_vel,aim.aim_p_vel);
     
 }
 
-// The trajectory solver is implemented as a package-level free function in
-// `trajectory.cpp`. Node no longer defines `Tracker_node::solveTrajectory`.
 
 int main(int argc, char *argv[])
 {

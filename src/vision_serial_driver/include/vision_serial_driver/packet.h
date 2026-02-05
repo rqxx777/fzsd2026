@@ -8,21 +8,9 @@
 
 #define visionMsg inf_visionMsg
 #define robotMsg inf_robotMsg
-#define VelMsg Vel_visionMsg
+//#define VelMsg Vel_visionMsg
 
 struct inf_visionMsg
-{
-    uint16_t head;
-    uint8_t fire;     // 开火标志
-    uint8_t tracking; // 跟踪标志
-    float aimYaw;     // 目标Yaw
-    float aimPitch;   // 目标Pitch
-    float vx;
-    float vy;
-    float wz;
-};
-
-struct Vel_visionMsg
 {
     uint16_t head;
     uint8_t fire;     // 开火标志
@@ -32,7 +20,22 @@ struct Vel_visionMsg
     float aimPitch;   // 目标Pitch
     float aimPVel;      // 目标Pitch速度
     float aimYVel;      // 目标Yaw速度
-}
+    float vx;
+    float vy;
+    float wz;
+};
+
+// struct Vel_visionMsg
+// {
+//     uint16_t head;
+//     uint8_t fire;     // 开火标志
+//     uint8_t tracking; // 跟踪标志
+//     uint8_t VelControl; // 速度控制标志
+//     float aimYaw;     // 目标Yaw
+//     float aimPitch;   // 目标Pitch
+//     float aimPVel;      // 目标Pitch速度
+//     float aimYVel;      // 目标Yaw速度
+// };
 
 struct inf_robotMsg
 {
@@ -51,11 +54,11 @@ union visionArray
     uint8_t array[sizeof(struct visionMsg)];
 };
 
-union VelArray
-{
-    struct VelMsg msg;
-    uint8_t array[sizeof(struct VelMsg)];
-};
+// union VelArray
+// {
+//     struct VelMsg msg;
+//     uint8_t array[sizeof(struct VelMsg)];
+// };
 
 union robotArray
 {

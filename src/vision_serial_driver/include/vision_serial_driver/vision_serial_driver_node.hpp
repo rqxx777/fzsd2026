@@ -53,7 +53,7 @@ private:
 
     visionArray *vArray;
     robotArray *rArray;
-    VelArray *velArray;
+    // VelArray *velArray;
     avgFilter muzzleSpeedFilter;
     bool isOpen = false;
     std::string *dev_name;
