@@ -53,7 +53,6 @@ private:
 
     visionArray *vArray;
     robotArray *rArray;
-    // VelArray *velArray;
     avgFilter muzzleSpeedFilter;
     bool isOpen = false;
     std::string *dev_name;
@@ -63,12 +62,6 @@ private:
     SerialDriver serialDriver = SerialDriver(ctx);
     uint8_t VelControl;
 
-    // // Param client to set detect_color
-    // using ResultFuturePtr = std::shared_future<std::vector<rcl_interfaces::msg::SetParametersResult>>;
-    // bool initial_set_param_ = false;
-    // uint8_t previous_receive_color_ = 0;
-    // rclcpp::AsyncParametersClient::SharedPtr detector_param_client_;
-    // ResultFuturePtr set_param_future_;
 
 
     // Broadcast tf from odom to gimbal_link
